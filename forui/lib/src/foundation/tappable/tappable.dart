@@ -419,6 +419,11 @@ class _FTappableState<T extends FTappable> extends State<T> {
                 onPointerDown: _entries == null ? (event) => _start(event.buttons) : null,
                 onPointerMove: _entries == null
                     ? (event) async {
+                        // Check if it's mounted due to a non-deterministic race condition, https://github.com/duobaseio/forui/issues/482.
+                        if (!mounted) {
+                          return;
+                        }
+
                         // Avoid unnecessary state updates.
                         if (!_current.contains(FTappableVariant.pressed)) {
                           return;
