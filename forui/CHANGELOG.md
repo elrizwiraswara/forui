@@ -118,17 +118,28 @@ customized globally. Defaults to Lucide-backed set, `FIcons.lucide()`.
 
 
 ### `FPopoverMenu`
+* Add `FSubmenuItem.submenuHideRegion`.
+* Add `FSubmenuTile.submenuHideRegion`.
+
 * Change `FSubmenuItem.suffix` and `FSubmenuTile.suffix` defaults to resolve from `FIcons.chevronRight`.
 
 * Fix `FPopoverMenu` content not clipping properly at rounded corners.
 
 
 ### `FResizable`
+* Add `FResizableDividerStyle.hapticFeedback`. Defaults to `FHapticFeedback.lightImpact`.
+* Add `FResizableController.hapticFeedbackVelocity`. Defaults to `6.5`.
+
 * **Breaking** Add `FResizableDividerThumbStyle.icon`. Defaults to `FIcons.gripVertical` (horizontal axis) or
   `FIcons.gripHorizontal` (vertical axis).
+* Change `FResizableStyles.inherit(...)` to require a `hapticFeedback` parameter.
+
+* Fix horizontal `FResizable` not mirroring under `TextDirection.rtl`.
 
 
 ### `FSelect` & `FMultiSelect`
+* Add `FSelect.retainFocus`. Defaults to `true` on desktop and `false` on touch.
+
 * **Breaking** Add `FMultiSelectFieldStyle.clearIcon`. Defaults to `FIcons.x`.
 * **Breaking** Add `FMultiSelectTagStyle.icon`. Defaults to `FIcons.x`.
 * **Breaking** Add `FSelectScrollHandleStyle.upIcon` and `FSelectScrollHandleStyle.downIcon`. Defaults to
@@ -137,6 +148,8 @@ customized globally. Defaults to Lucide-backed set, `FIcons.lucide()`.
 * Change `FSelect.defaultIconBuilder` and `FMultiSelect.defaultIconBuilder` to resolve the chevron from
   `FIcons.chevronDown`.
 * Change `FSelectSearchFieldProperties.defaultIconBuilder` to resolve the search icon from `FIcons.search`.
+
+* Fix `FSelect` retaining field focus after an item is selected on touch devices.
 
 
 ### `FSelectMenuTile`
@@ -150,6 +163,17 @@ customized globally. Defaults to Lucide-backed set, `FIcons.lucide()`.
 
 ### `FSidebar` & `FSidebarItem`
 * **Breaking** Add `FSidebarItemStyle.collapsibleIcon`. Defaults to `FIcons.chevronRight`.
+
+
+### `FSlider`
+* Add `FSliderHaptic` enum.
+* Add `FSliderStyle.collisionHapticFeedback`.
+* Add `FSliderStyle.tickHapticFeedback`.
+* Add `FSliderController.hapticFeedbackVelocity`.
+
+* **Breaking** Change `FSliderController.slide(...)` to return `FSliderHaptic?`.
+* **Breaking** Change `FSliderController.step(...)` to return `bool`.
+* **Breaking** Change `FSliderController.tap(...)` to return `({FSliderActiveThumb? thumb, bool haptic})` instead of `bool?`.
 
 
 ### `FStyle` & `FThemeData`
@@ -184,6 +208,8 @@ customized globally. Defaults to Lucide-backed set, `FIcons.lucide()`.
 
 
 ### `FTextField`
+* Add `FTextFieldStyle.constraints`, enforcing a minimum height per size variant.
+
 * Change `FTextField.defaultObscureIconBuilder` to resolve eye icons from `FIcons.eye` and `FIcons.eyeClosed`.
 * Change `FTextField.defaultClearIconBuilder` to resolve the clear icon from `FIcons.x`.
 

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
 
@@ -60,10 +61,22 @@ sealed class Divider extends StatefulWidget {
       onFocusChange: onFocusChange,
       actions: {
         _Up: CallbackAction(
-          onInvoke: (_) => controller.update(left, right, -resizePercentage * (controller.regions[left].extent.total)),
+          onInvoke: (_) {
+            final delta = -resizePercentage * (controller.regions[left].extent.total);
+            if (controller.update(left, right, delta)) {
+              unawaited(style.hapticFeedback());
+            }
+            return null;
+          },
         ),
         _Down: CallbackAction(
-          onInvoke: (_) => controller.update(left, right, resizePercentage * (controller.regions[left].extent.total)),
+          onInvoke: (_) {
+            final delta = resizePercentage * (controller.regions[left].extent.total);
+            if (controller.update(left, right, delta)) {
+              unawaited(style.hapticFeedback());
+            }
+            return null;
+          },
         ),
       },
       child: FFocusedOutline(
@@ -114,37 +127,44 @@ class _HorizontalDividerState extends State<HorizontalDivider> {
   bool _focused = false;
 
   @override
-  Widget build(BuildContext context) => Positioned(
-    left: widget.controller.regions[widget.left].offset.max - (widget.hitRegionExtent / 2),
-    child: widget.focusableActionDetector(
-      shortcuts: const {SingleActivator(.arrowLeft): _Up(), SingleActivator(.arrowRight): _Down()},
-      onFocusChange: (focused) => setState(() => _focused = focused),
-      focused: _focused,
-      children: [
-        if (widget.type == .divider || widget.type == .dividerWithThumb)
-          ColoredBox(
-            color: widget.style.color,
-            child: SizedBox(height: widget.crossAxisExtent, width: widget.style.width),
-          ),
-        if (widget.type == .dividerWithThumb) _Thumb(style: widget.style.thumbStyle),
-        SizedBox(
-          height: widget.crossAxisExtent,
-          width: widget.hitRegionExtent,
-          child: GestureDetector(
-            onHorizontalDragUpdate: (details) {
-              if (details.delta.dx == 0.0) {
-                return;
-              }
+  Widget build(BuildContext context) {
+    final ltr = Directionality.of(context) == TextDirection.ltr;
+    return PositionedDirectional(
+      start: widget.controller.regions[widget.left].offset.max - (widget.hitRegionExtent / 2),
+      child: widget.focusableActionDetector(
+        shortcuts: ltr
+            ? const {SingleActivator(.arrowLeft): _Up(), SingleActivator(.arrowRight): _Down()}
+            : const {SingleActivator(.arrowLeft): _Down(), SingleActivator(.arrowRight): _Up()},
+        onFocusChange: (focused) => setState(() => _focused = focused),
+        focused: _focused,
+        children: [
+          if (widget.type == .divider || widget.type == .dividerWithThumb)
+            ColoredBox(
+              color: widget.style.color,
+              child: SizedBox(height: widget.crossAxisExtent, width: widget.style.width),
+            ),
+          if (widget.type == .dividerWithThumb) _Thumb(style: widget.style.thumbStyle),
+          SizedBox(
+            height: widget.crossAxisExtent,
+            width: widget.hitRegionExtent,
+            child: GestureDetector(
+              onHorizontalDragUpdate: (details) {
+                if (details.delta.dx == 0.0) {
+                  return;
+                }
 
-              widget.controller.update(widget.left, widget.right, details.delta.dx);
-              // TODO: haptic feedback
-            },
-            onHorizontalDragEnd: (_) => widget.controller.end(widget.left, widget.right),
+                final delta = ltr ? details.delta.dx : -details.delta.dx;
+                if (widget.controller.update(widget.left, widget.right, delta)) {
+                  unawaited(widget.style.hapticFeedback());
+                }
+              },
+              onHorizontalDragEnd: (_) => widget.controller.end(widget.left, widget.right),
+            ),
           ),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 }
 
 @internal
@@ -193,8 +213,9 @@ class _VerticalDividerState extends State<VerticalDivider> {
                 return;
               }
 
-              widget.controller.update(widget.left, widget.right, details.delta.dy);
-              // TODO: haptic feedback
+              if (widget.controller.update(widget.left, widget.right, details.delta.dy)) {
+                unawaited(widget.style.hapticFeedback());
+              }
             },
             onVerticalDragEnd: (_) => widget.controller.end(widget.left, widget.right),
           ),
@@ -261,11 +282,18 @@ class FResizableDividerStyle with Diagnosticable, _$FResizableDividerStyleFuncti
   @override
   final FResizableDividerThumbStyle thumbStyle;
 
+  /// The haptic feedback when a region collides with its neighbour while resizing.
+  ///
+  /// Defaults to [FHapticFeedback.lightImpact]. The minimum velocity is controlled by [FResizableController.hapticFeedbackVelocity].
+  @override
+  final Future<void> Function() hapticFeedback;
+
   /// Creates a [FResizableDividerStyle].
   FResizableDividerStyle({
     required this.color,
     required this.focusedOutlineStyle,
     required this.thumbStyle,
+    required this.hapticFeedback,
     this.width = 0.5,
   }) : assert(0 < width, 'width ($width) must be > 0');
 }
