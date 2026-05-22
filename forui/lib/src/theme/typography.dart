@@ -386,7 +386,14 @@ final class FTypography with Diagnosticable {
   /// ```dart
   /// extension FTypographyBrandTypography on FTypography {
   ///   BrandTypography get brand => extension<BrandTypography>();
+  ///
+  ///   // Alternatively
+  ///   TextStyle get display => extension<BrandTypography>().display;
   /// }
+  ///
+  /// final brand = context.theme.typography.brand;
+  ///
+  /// final display = context.theme.typography.display;
   /// ```
   /// {@endtemplate}
   T extension<T extends Object>() => _extensions[T]! as T;
