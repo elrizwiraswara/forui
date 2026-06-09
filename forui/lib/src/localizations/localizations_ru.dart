@@ -72,6 +72,24 @@ class FLocalizationsRu extends FLocalizations {
   String get autocompleteNoResults => 'Совпадений не найдено.';
 
   @override
+  String get calendarNextMonthSemanticsLabel => 'Следующий месяц';
+
+  @override
+  String get calendarNextYearSemanticsLabel => 'Следующий год';
+
+  @override
+  String get calendarNextYearsSemanticsLabel => 'Следующие годы';
+
+  @override
+  String get calendarPreviousMonthSemanticsLabel => 'Предыдущий месяц';
+
+  @override
+  String get calendarPreviousYearSemanticsLabel => 'Предыдущий год';
+
+  @override
+  String get calendarPreviousYearsSemanticsLabel => 'Предыдущие годы';
+
+  @override
   String get contextMenuSemanticsLabel => 'Контекстное меню';
 
   @override

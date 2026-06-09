@@ -1,345 +1,377 @@
+import 'package:flutter/animation.dart';
 import 'package:flutter/foundation.dart';
 
-import 'package:sugar/sugar.dart';
-
 import 'package:forui/forui.dart';
+import 'package:forui/src/foundation/debug.dart';
+import 'package:forui/src/widgets/calendar/grid.dart';
 
 part 'calendar_control.dart';
+
 part 'calendar_controller.control.dart';
 
-bool _true(DateTime _) => true;
+bool _daySelectable(DateTime start, DateTime date, DateTime end) => !date.isBefore(start) && !date.isAfter(end);
 
-DateTime _truncateAndStripTimezone(DateTime date) => .utc(date.year, date.month, date.day);
+bool _monthSelectable(DateTime start, DateTime date, DateTime end) =>
+    !date.isBefore(.utc(start.year, start.month)) && !date.isAfter(.utc(end.year, end.month));
 
-/// A controller that controls date selection in a calendar.
-///
-/// All returned [DateTime]s are in UTC timezone with no time component. It is possible to set the controller's value
-/// to a unselectable date. Doing so will result in undefined behavior.
-///
-/// This class should be extended to customize date selection. By default, the following controllers are provided:
-/// * [FCalendarController.date] for selecting a single date.
-/// * [FCalendarController.dates] for selecting multiple dates.
-/// * [FCalendarController.range] for selecting a single range.
-abstract class FCalendarController<T> extends ValueNotifier<T> {
-  /// Creates a [FCalendarController] that allows only a single date to be selected, with the given initially selected
-  /// date.
-  ///
-  /// [selectable] will always return true if not given.
-  ///
-  /// [toggleable] determines whether the controller should unselect a date if it is already selected. Defaults to true.
-  ///
-  /// [truncateAndStripTimezone] determines whether the controller should truncate and convert all given [DateTime]s to
-  /// dates in UTC timezone. Defaults to true.
-  ///
-  /// ```dart
-  /// DateTime truncateAndStripTimezone(DateTime date) => DateTime.utc(date.year, date.month, date.day);
-  /// ```
-  ///
-  /// [truncateAndStripTimezone] should be set to false if you can guarantee that all dates are in UTC timezone (with
-  /// the help of a 3rd party library), which will improve performance. **Warning:** Giving a [DateTime] in local
-  /// timezone or with a time component when [truncateAndStripTimezone] is false is undefined behavior.
-  ///
-  /// ## Contract
-  /// Throws [AssertionError] if [initial] is not in UTC timezone and [truncateAndStripTimezone] is false.
-  static FCalendarController<DateTime?> date({
-    DateTime? initial,
-    Predicate<DateTime>? selectable,
-    bool toggleable = true,
-    bool truncateAndStripTimezone = true,
-  }) => truncateAndStripTimezone
-      ? _AutoDateController(initial: initial, selectable: selectable, toggleable: toggleable)
-      : _DateController(initial: initial, selectable: selectable, toggleable: toggleable);
+bool _yearSelectable(DateTime start, DateTime date, DateTime end) => start.year <= date.year && date.year <= end.year;
 
-  /// Creates a [FCalendarController] that allows multiple dates to be selected, with the given initial selected dates.
-  ///
-  /// [selectable] will always return true if not given.
-  ///
-  /// [truncateAndStripTimezone] determines whether the controller should truncate and convert all given [DateTime]s to
-  /// dates in UTC timezone. Defaults to true.
-  ///
-  /// ```dart
-  /// DateTime truncateAndStripTimezone(DateTime date) => DateTime.utc(date.year, date.month, date.day);
-  /// ```
-  ///
-  /// [truncateAndStripTimezone] should be set to false if you can guarantee that all dates are in UTC timezone (with
-  /// the help of a 3rd party library), which will improve performance. **Warning:** Giving a [DateTime] in local
-  /// timezone or with a time component when [truncateAndStripTimezone] is false is undefined behavior.
-  ///
-  /// ## Contract
-  /// Throws [AssertionError] if the dates in [initial] are not in UTC timezone and [truncateAndStripTimezone]
-  /// is false.
-  static FCalendarController<Set<DateTime>> dates({
-    Set<DateTime> initial = const {},
-    Predicate<DateTime>? selectable,
-    bool truncateAndStripTimezone = true,
-  }) => truncateAndStripTimezone
-      ? _AutoDatesController(initial: initial, selectable: selectable)
-      : _DatesController(initial: initial, selectable: selectable);
+DateTime _clamp(DateTime start, DateTime date, DateTime end) =>
+    date.isBefore(start) ? start : (date.isAfter(end) ? end : date);
 
-  /// Creates a [FCalendarController] that allows a single range to be selected, with the given initial range.
-  ///
-  /// [selectable] will always return true if not given.
-  ///
-  /// [truncateAndStripTimezone] determines whether the controller should truncate and convert all given [DateTime]s to
-  /// dates in UTC timezone. Defaults to true.
-  ///
-  /// ```dart
-  /// DateTime truncateAndStripTimezone(DateTime date) => DateTime.utc(date.year, date.month, date.day);
-  /// ```
-  ///
-  /// [truncateAndStripTimezone] should be set to false if you can guarantee that all dates are in UTC timezone (with
-  /// the help of a 3rd party library), which will improve performance. **Warning:** Giving a [DateTime] in local
-  /// timezone or with a time component when [truncateAndStripTimezone] is false is undefined behavior.
-  ///
-  /// Both the start and end dates of the range are inclusive. Unselectable dates within the selected range are selected
-  /// regardless.
-  ///
-  /// ## Contract
-  /// Throws [AssertionError] if:
-  /// * the given dates in [initial] are not in UTC timezone and [truncateAndStripTimezone] is false.
-  /// * the end date is less than start date.
-  static FCalendarController<(DateTime, DateTime)?> range({
-    (DateTime, DateTime)? initial,
-    Predicate<DateTime>? selectable,
-    bool truncateAndStripTimezone = true,
-  }) => truncateAndStripTimezone
-      ? _AutoRangeController(initial: initial, selectable: selectable)
-      : _RangeController(initial: initial, selectable: selectable);
+DateTime _truncate(DateTime date) => .utc(date.year, date.month, date.day);
 
-  /// Creates a [FCalendarController] with the given initial [value].
-  FCalendarController(super._value);
+/// The calendar grid type.
+enum FCalendarPickerGridType {
+  /// The day grid.
+  day,
 
-  /// Returns true if the given [date] can be selected/unselected.
-  ///
-  /// ## Note
-  /// It is unsafe for this function to have side effects since it may be called more than once for a single date. As it
-  /// is called frequently, it should also not be computationally expensive.
-  bool selectable(DateTime date);
+  /// The month grid.
+  month,
 
-  /// Returns true if the given [date] is selected.
-  bool selected(DateTime date);
-
-  /// Selects the given [date].
-  void select(DateTime date);
+  /// The year grid.
+  year,
 }
 
-@internal
-class ProxyController extends FCalendarController<Object?> {
-  Predicate<DateTime> _selectable;
-  bool Function(DateTime) _selected;
-  ValueChanged<DateTime> _select;
+/// A controller for a [FCalendar].
+///
+/// [DateTime]s outside the [start] and [end] dates are unselectable.
+///
+/// See:
+/// * [FDateSelectionController] for controlling date selection.
+sealed class FCalendarController extends FChangeNotifier {
+  /// The default selectable predicate that always returns true.
+  static bool defaultSelectable(DateTime date) => true;
 
-  ProxyController({required this._selectable, required this._selected, required this._select}) : super(0);
+  /// The start date, inclusive. Defaults to `DateTime.utc(1900)`.
+  final DateTime start;
 
-  void update({
-    required Predicate<DateTime> selectable,
-    required bool Function(DateTime) selected,
-    required ValueChanged<DateTime> select,
-  }) {
-    _selectable = selectable;
-    _selected = selected;
-    _select = select;
+  /// Today's date. Defaults to [DateTime.now].
+  final DateTime today;
+
+  /// The end date, inclusive. Defaults to `DateTime.utc(2100)`.
+  final DateTime end;
+
+  final bool Function(DateTime) _selectable;
+  late DateTime _month;
+
+  /// Creates a [FCalendarController].
+  FCalendarController({
+    this._selectable = defaultSelectable,
+    DateTime? start,
+    DateTime? today,
+    DateTime? initial,
+    DateTime? end,
+  }) : start = _truncate(start ?? .utc(1900)),
+       today = _truncate(today ?? .now()),
+       end = _truncate(end ?? .utc(2100)) {
+    // [currentMonth] is a normalized first-of-month, so it is checked at month granularity: a mid-month/mid-year start
+    // (e.g. Jul 15) still permits showing its own month (Jul 1). The day grid gates individual days via selectable.
+    _currentMonth = .utc((initial ?? this.today).year, (initial ?? this.today).month);
+    assert(debugCheckInclusiveDateRange(this.start, this.today, this.end));
+    assert(GridController.debugCheckInclusiveMonthRange(this.start, _currentMonth, this.end));
+  }
+
+  /// The current year and month that the day picker shows.
+  DateTime get currentMonth => _month;
+
+  DateTime get _currentMonth => _month;
+
+  set _currentMonth(DateTime value) {
+    assert(
+      value.isUtc && value == .utc(value.year, value.month),
+      '_currentMonth must be a UTC first-of-month, but was $value.',
+    );
+    _month = value;
+  }
+}
+
+abstract class _GridCalendarController extends FCalendarController {
+  /// The day picker controller.
+  late final FCalendarDayPickerController day;
+
+  /// The month picker controller.
+  late final FCalendarMonthPickerController month;
+
+  /// The year picker controller.
+  late final FCalendarYearPickerController year;
+
+  FCalendarPickerGridType _type = .day;
+
+  _GridCalendarController({super.selectable, super.start, super.today, super.initial, super.end}) {
+    day =
+        FCalendarDayPickerController(
+          start: start,
+          end: end,
+          initial: _currentMonth,
+          selectable: (date) => _daySelectable(start, date, end) && _selectable(date),
+        )..addListener(() {
+          if (_type == .day) {
+            _currentMonth = day.current;
+          }
+          notifyListeners();
+        });
+    month = FCalendarMonthPickerController(
+      start: start,
+      end: end,
+      initial: _currentMonth,
+      selectable: (date) => _monthSelectable(start, date, end) && _selectable(date),
+    )..addListener(notifyListeners);
+    year = FCalendarYearPickerController(
+      start: start,
+      end: end,
+      initial: _currentMonth,
+      selectable: (date) => _yearSelectable(start, date, end) && _selectable(date),
+    )..addListener(notifyListeners);
+  }
+
+  /// Shows the day picker on the given [date]'s month, or the current month if [date] is null.
+  ///
+  /// If the day picker is already shown, its grid animates to the month; otherwise it is shown immediately.
+  Future<void> animateToDayPicker([
+    DateTime? date,
+    Duration duration = const Duration(milliseconds: 200),
+    Curve curve = Curves.ease,
+  ]) async {
+    final target = _clamp(start, switch (date) {
+      null => _currentMonth,
+      final m => .utc(m.year, m.month),
+    }, end);
+
+    if (day.controller.hasClients) {
+      await day.animateTo(target, duration: duration, curve: curve);
+    } else {
+      _reattach(day, .day, target);
+    }
+  }
+
+  /// Shows the day picker on the given [date]'s month, or the current month if [date] is null.
+  void jumpToDayPicker([DateTime? date]) {
+    final target = _clamp(start, switch (date) {
+      null => _currentMonth,
+      final m => .utc(m.year, m.month),
+    }, end);
+
+    if (day.controller.hasClients) {
+      day.jumpTo(target);
+    } else {
+      _reattach(day, .day, target);
+    }
+  }
+
+  /// Shows the month picker for the given [date]'s year, or the current year if [date] is null.
+  ///
+  /// If the month picker is already shown, its grid animates to the year; otherwise it is shown immediately.
+  Future<void> animateToMonthPicker([
+    DateTime? date,
+    Duration duration = const Duration(milliseconds: 200),
+    Curve curve = Curves.ease,
+  ]) async {
+    final target = _clamp(start, switch (date) {
+      null => _currentMonth,
+      final m => .utc(m.year, m.month),
+    }, end);
+
+    if (month.controller.hasClients) {
+      await month.animateTo(target, duration: duration, curve: curve);
+    } else {
+      _reattach(month, .month, target);
+    }
+  }
+
+  /// Shows the month picker for the given [date]'s year, or the current year if [date] is null.
+  void jumpToMonthPicker([DateTime? date]) {
+    final target = _clamp(start, switch (date) {
+      null => _currentMonth,
+      final m => .utc(m.year, m.month),
+    }, end);
+
+    if (month.controller.hasClients) {
+      month.jumpTo(target);
+    } else {
+      _reattach(month, .month, target);
+    }
+  }
+
+  /// Shows the year picker for the given [date]'s year, or the current year if [date] is null.
+  ///
+  /// If the year picker is already shown, its grid animates to the decade; otherwise it is shown immediately.
+  Future<void> animateToYearPicker([
+    DateTime? date,
+    Duration duration = const Duration(milliseconds: 200),
+    Curve curve = Curves.ease,
+  ]) async {
+    final target = _clamp(start, switch (date) {
+      null => _currentMonth,
+      final m => .utc(m.year, m.month),
+    }, end);
+
+    if (year.controller.hasClients) {
+      await year.animateTo(target, duration: duration, curve: curve);
+    } else {
+      _reattach(year, .year, target);
+    }
+  }
+
+  /// Shows the year picker for the given [date]'s year, or the current year if [date] is null.
+  void jumpToYearPicker([DateTime? date]) {
+    final target = _clamp(start, switch (date) {
+      null => _currentMonth,
+      final m => .utc(m.year, m.month),
+    }, end);
+
+    if (year.controller.hasClients) {
+      year.jumpTo(target);
+    } else {
+      _reattach(year, .year, target);
+    }
+  }
+
+  void _reattach(GridController controller, FCalendarPickerGridType type, DateTime target) {
+    controller.reattach(target);
+    if (type == .day) {
+      _currentMonth = controller.current;
+    }
+    _type = type;
     notifyListeners();
   }
 
-  @override
-  bool selectable(DateTime date) => _selectable(date);
+  /// The currently shown grid's type.
+  FCalendarPickerGridType get type => _type;
 
   @override
-  bool selected(DateTime date) => _selected(date);
-
-  @override
-  void select(DateTime date) => _select(date);
+  void dispose() {
+    year.dispose();
+    month.dispose();
+    day.dispose();
+    super.dispose();
+  }
 }
 
-// The single date controllers.
-class _AutoDateController extends FCalendarController<DateTime?> {
-  final Predicate<DateTime> _selectable;
-  final bool toggleable;
+/// A controller for a [FCalendar] that cycles through day/month/year grid pickers.
+class FGridCalendarController extends _GridCalendarController {
+  /// Creates a [FGridCalendarController].
+  FGridCalendarController({super.selectable, super.start, super.today, super.initial, super.end});
 
-  _AutoDateController({required DateTime? initial, required Predicate<DateTime>? selectable, required this.toggleable})
-    : _selectable = selectable ?? _true,
-      super(initial = initial == null ? null : _truncateAndStripTimezone(initial));
+  /// Advances the inline grid to show the next picker in the cycle.
+  void cycle() {
+    switch (type) {
+      case .day:
+        jumpToMonthPicker();
+      case .month:
+        jumpToYearPicker(month.current);
+      case .year:
+        jumpToDayPicker();
+    }
+  }
+}
 
-  @override
-  bool selectable(DateTime date) => _selectable(_truncateAndStripTimezone(date));
+/// A controller for a [FCalendar] with a split header whose month and year grid pickers are independently togglable.
+class FGridSplitCalendarController extends _GridCalendarController {
+  /// Creates a [FGridSplitCalendarController].
+  FGridSplitCalendarController({super.selectable, super.start, super.today, super.initial, super.end});
 
-  @override
-  bool selected(DateTime date) => value == _truncateAndStripTimezone(date);
+  /// Shows the month picker if not currently shown, and the day picker otherwise.
+  void toggleMonthPicker() => type == .month ? jumpToDayPicker() : jumpToMonthPicker();
 
-  @override
-  void select(DateTime date) {
-    date = _truncateAndStripTimezone(date);
-    super.value = (toggleable && value == date) ? null : date;
+  /// Shows the year picker if not currently shown, and the day picker otherwise.
+  void toggleYearPicker() => type == .year ? jumpToDayPicker() : jumpToYearPicker();
+}
+
+/// A controller for a [FCalendar] that toggles between a day grid picker and a month-year wheel picker.
+class FWheelCalendarController extends FCalendarController {
+  /// The day picker controller.
+  late final FCalendarDayPickerController day;
+  bool _wheel = false;
+
+  /// Creates a [FWheelCalendarController].
+  FWheelCalendarController({super.selectable, super.start, super.today, super.initial, super.end}) {
+    day =
+        FCalendarDayPickerController(
+          start: start,
+          end: end,
+          initial: _currentMonth,
+          selectable: (date) => _daySelectable(start, date, end) && _selectable(date),
+        )..addListener(() {
+          if (!_wheel) {
+            _currentMonth = day.current;
+          }
+          notifyListeners();
+        });
   }
 
-  @override
-  set value(DateTime? value) {
-    if (toggleable && super.value == value) {
-      super.value = null;
+  /// Shows the day grid on the given [date]'s month, or the current month if [date] is null.
+  ///
+  /// If the day grid is already shown, it animates to the month; otherwise the month-year wheel is dismissed and the
+  /// day grid is shown on the month immediately.
+  Future<void> animateToDayPicker([
+    DateTime? date,
+    Duration duration = const Duration(milliseconds: 200),
+    Curve curve = Curves.ease,
+  ]) async {
+    final target = _clamp(start, switch (date) {
+      null => _currentMonth,
+      final m => .utc(m.year, m.month),
+    }, end);
+
+    if (!_wheel && day.controller.hasClients) {
+      await day.animateTo(target, duration: duration, curve: curve);
     } else {
-      super.value = value == null ? null : _truncateAndStripTimezone(value);
-    }
-  }
-}
-
-class _DateController extends FCalendarController<DateTime?> {
-  final Predicate<DateTime> _selectable;
-  final bool toggleable;
-
-  _DateController({required DateTime? initial, required Predicate<DateTime>? selectable, required this.toggleable})
-    : assert(initial?.isUtc ?? true, 'initial ($initial) must be in UTC timezone'),
-      _selectable = selectable ?? _true,
-      super(initial);
-
-  @override
-  bool selectable(DateTime date) => _selectable(date);
-
-  @override
-  bool selected(DateTime date) => value == date;
-
-  @override
-  void select(DateTime date) => value = (toggleable && value == date) ? null : date;
-
-  @override
-  set value(DateTime? value) => super.value = (toggleable && super.value == value) ? null : value;
-}
-
-// The multiple dates controllers.
-final class _AutoDatesController extends FCalendarController<Set<DateTime>> {
-  final Predicate<DateTime> _selectable;
-
-  _AutoDatesController({Set<DateTime> initial = const {}, Predicate<DateTime>? selectable})
-    : _selectable = selectable ?? _true,
-      super(initial.map(_truncateAndStripTimezone).toSet());
-
-  @override
-  bool selectable(DateTime date) => _selectable(_truncateAndStripTimezone(date));
-
-  @override
-  bool selected(DateTime date) => value.contains(_truncateAndStripTimezone(date));
-
-  @override
-  void select(DateTime date) {
-    final copy = {...value};
-    super.value = copy..toggle(_truncateAndStripTimezone(date));
-  }
-
-  @override
-  set value(Set<DateTime> value) => super.value = value.map(_truncateAndStripTimezone).toSet();
-}
-
-final class _DatesController extends FCalendarController<Set<DateTime>> {
-  final Predicate<DateTime> _selectable;
-
-  _DatesController({Set<DateTime> initial = const {}, Predicate<DateTime>? selectable})
-    : assert(initial.every((d) => d.isUtc), 'initial ($initial) must be in UTC timezone'),
-      _selectable = selectable ?? _true,
-      super(initial);
-
-  @override
-  bool selectable(DateTime date) => _selectable(date);
-
-  @override
-  bool selected(DateTime date) => value.contains(date);
-
-  @override
-  void select(DateTime date) => value = value..toggle(date);
-}
-
-// The range controllers.
-final class _AutoRangeController extends FCalendarController<(DateTime, DateTime)?> {
-  final Predicate<DateTime> _selectable;
-
-  _AutoRangeController({(DateTime, DateTime)? initial, Predicate<DateTime>? selectable})
-    : _selectable = selectable ?? _true,
-      super(
-        initial = initial == null
-            ? null
-            : (_truncateAndStripTimezone(initial.$1), _truncateAndStripTimezone(initial.$2)),
-      ) {
-    final range = value;
-    assert(
-      range == null || (range.$1.isBefore(range.$2) || range.$1.isAtSameMomentAs(range.$2)),
-      'start (${range.$1}) must be <= end (${range.$2})',
-    );
-  }
-
-  @override
-  bool selectable(DateTime date) => _selectable(_truncateAndStripTimezone(date));
-
-  @override
-  bool selected(DateTime date) {
-    if (value case (final first, final last)) {
-      final current = date.toLocalDate();
-      return first.toLocalDate() <= current && current <= last.toLocalDate();
-    }
-
-    return false;
-  }
-
-  @override
-  void select(DateTime date) {
-    date = _truncateAndStripTimezone(date);
-    switch (value) {
-      case null:
-        super.value = (date, date);
-
-      case (final first, final last) when date == first || date == last:
-        super.value = null;
-
-      case (final first, final last) when date.isBefore(first):
-        super.value = (date, last);
-
-      case (final first, _):
-        super.value = (first, date);
+      _wheel = false;
+      day.reattach(target);
+      _currentMonth = day.current;
+      notifyListeners();
     }
   }
 
-  @override
-  set value((DateTime, DateTime)? value) =>
-      super.value = value == null ? null : (_truncateAndStripTimezone(value.$1), _truncateAndStripTimezone(value.$2));
-}
+  /// Shows the day grid on the given [date]'s month, or the current month if [date] is null.
+  void jumpToDayPicker([DateTime? date]) {
+    final target = _clamp(start, switch (date) {
+      null => _currentMonth,
+      final m => .utc(m.year, m.month),
+    }, end);
 
-final class _RangeController extends FCalendarController<(DateTime, DateTime)?> {
-  final Predicate<DateTime> _selectable;
-
-  _RangeController({(DateTime, DateTime)? initial, Predicate<DateTime>? selectable})
-    : assert(initial == null || (initial.$1.isUtc && initial.$2.isUtc), 'initial value must be in UTC timezone.'),
-      assert(
-        initial == null || (initial.$1.isBefore(initial.$2) || initial.$1.isAtSameMomentAs(initial.$2)),
-        'End date must be greater than or equal to start date.',
-      ),
-      _selectable = selectable ?? _true,
-      super(initial);
-
-  @override
-  bool selectable(DateTime date) => _selectable(date);
-
-  @override
-  bool selected(DateTime date) {
-    if (value case (final first, final last)) {
-      final current = date.toLocalDate();
-      return first.toLocalDate() <= current && current <= last.toLocalDate();
+    if (!_wheel && day.controller.hasClients) {
+      day.jumpTo(target);
+    } else {
+      _wheel = false;
+      day.reattach(target);
+      _currentMonth = day.current;
+      notifyListeners();
     }
-
-    return false;
   }
 
-  @override
-  void select(DateTime date) {
-    switch (value) {
-      case null:
-        super.value = (date, date);
-
-      case (final first, final last) when date == first || date == last:
-        super.value = null;
-
-      case (final first, final last) when date.isBefore(first):
-        super.value = (date, last);
-
-      case (final first, _):
-        super.value = (first, date);
+  /// Shows the month-year wheel if the day grid is shown, and the day grid otherwise.
+  void toggleMonthYearPicker() {
+    if (_wheel) {
+      day.reattach(_currentMonth);
+      _wheel = false;
+    } else {
+      _wheel = true;
     }
+    notifyListeners();
+  }
+
+  /// Sets the month-year wheel picker's selected [month] and [year], and updates [currentMonth]. Does nothing if the
+  /// month-year wheel picker.
+  void setMonthYear(int month, int year) {
+    if (!_wheel) {
+      return;
+    }
+
+    final next = _clamp(.utc(start.year, start.month), .utc(year, month), .utc(end.year, end.month));
+    if (next != _currentMonth) {
+      _currentMonth = next;
+      notifyListeners();
+    }
+  }
+
+  /// Whether the month-year wheel picker is currently shown.
+  bool get monthYear => _wheel;
+
+  @override
+  void dispose() {
+    day.dispose();
+    super.dispose();
   }
 }

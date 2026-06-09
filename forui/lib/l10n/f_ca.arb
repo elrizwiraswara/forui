@@ -29,5 +29,11 @@
   "textFieldEmailLabel": "Correu electrònic",
   "passwordFieldLabel": "Contrasenya",
   "dateTimePickerToday": "Avui",
-  "contextMenuSemanticsLabel": "Menú contextual"
+  "contextMenuSemanticsLabel": "Menú contextual",
+  "calendarPreviousMonthSemanticsLabel": "Mes anterior",
+  "calendarNextMonthSemanticsLabel": "Mes següent",
+  "calendarNextYearSemanticsLabel": "Any següent",
+  "calendarPreviousYearSemanticsLabel": "Any anterior",
+  "calendarNextYearsSemanticsLabel": "Anys següents",
+  "calendarPreviousYearsSemanticsLabel": "Anys anteriors"
 }

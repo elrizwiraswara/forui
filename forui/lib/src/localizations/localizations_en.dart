@@ -72,6 +72,24 @@ class FLocalizationsEn extends FLocalizations {
   String get autocompleteNoResults => 'No matches found.';
 
   @override
+  String get calendarNextMonthSemanticsLabel => 'Next month';
+
+  @override
+  String get calendarNextYearSemanticsLabel => 'Next year';
+
+  @override
+  String get calendarNextYearsSemanticsLabel => 'Next years';
+
+  @override
+  String get calendarPreviousMonthSemanticsLabel => 'Previous month';
+
+  @override
+  String get calendarPreviousYearSemanticsLabel => 'Previous year';
+
+  @override
+  String get calendarPreviousYearsSemanticsLabel => 'Previous years';
+
+  @override
   String get contextMenuSemanticsLabel => 'Context menu';
 
   @override
@@ -170,6 +188,24 @@ class FLocalizationsEnAu extends FLocalizationsEn {
 
   @override
   String get autocompleteNoResults => 'No matches found.';
+
+  @override
+  String get calendarNextMonthSemanticsLabel => 'Next month';
+
+  @override
+  String get calendarNextYearSemanticsLabel => 'Next year';
+
+  @override
+  String get calendarNextYearsSemanticsLabel => 'Next years';
+
+  @override
+  String get calendarPreviousMonthSemanticsLabel => 'Previous month';
+
+  @override
+  String get calendarPreviousYearSemanticsLabel => 'Previous year';
+
+  @override
+  String get calendarPreviousYearsSemanticsLabel => 'Previous years';
 
   @override
   String get contextMenuSemanticsLabel => 'Context menu';
@@ -272,6 +308,24 @@ class FLocalizationsEnCa extends FLocalizationsEn {
   String get autocompleteNoResults => 'No matches found.';
 
   @override
+  String get calendarNextMonthSemanticsLabel => 'Next month';
+
+  @override
+  String get calendarNextYearSemanticsLabel => 'Next year';
+
+  @override
+  String get calendarNextYearsSemanticsLabel => 'Next years';
+
+  @override
+  String get calendarPreviousMonthSemanticsLabel => 'Previous month';
+
+  @override
+  String get calendarPreviousYearSemanticsLabel => 'Previous year';
+
+  @override
+  String get calendarPreviousYearsSemanticsLabel => 'Previous years';
+
+  @override
   String get contextMenuSemanticsLabel => 'Context menu';
 
   @override
@@ -370,6 +424,24 @@ class FLocalizationsEnGb extends FLocalizationsEn {
 
   @override
   String get autocompleteNoResults => 'No matches found.';
+
+  @override
+  String get calendarNextMonthSemanticsLabel => 'Next month';
+
+  @override
+  String get calendarNextYearSemanticsLabel => 'Next year';
+
+  @override
+  String get calendarNextYearsSemanticsLabel => 'Next years';
+
+  @override
+  String get calendarPreviousMonthSemanticsLabel => 'Previous month';
+
+  @override
+  String get calendarPreviousYearSemanticsLabel => 'Previous year';
+
+  @override
+  String get calendarPreviousYearsSemanticsLabel => 'Previous years';
 
   @override
   String get contextMenuSemanticsLabel => 'Context menu';
@@ -472,6 +544,24 @@ class FLocalizationsEnIe extends FLocalizationsEn {
   String get autocompleteNoResults => 'No matches found.';
 
   @override
+  String get calendarNextMonthSemanticsLabel => 'Next month';
+
+  @override
+  String get calendarNextYearSemanticsLabel => 'Next year';
+
+  @override
+  String get calendarNextYearsSemanticsLabel => 'Next years';
+
+  @override
+  String get calendarPreviousMonthSemanticsLabel => 'Previous month';
+
+  @override
+  String get calendarPreviousYearSemanticsLabel => 'Previous year';
+
+  @override
+  String get calendarPreviousYearsSemanticsLabel => 'Previous years';
+
+  @override
   String get contextMenuSemanticsLabel => 'Context menu';
 
   @override
@@ -570,6 +660,24 @@ class FLocalizationsEnIn extends FLocalizationsEn {
 
   @override
   String get autocompleteNoResults => 'No matches found.';
+
+  @override
+  String get calendarNextMonthSemanticsLabel => 'Next month';
+
+  @override
+  String get calendarNextYearSemanticsLabel => 'Next year';
+
+  @override
+  String get calendarNextYearsSemanticsLabel => 'Next years';
+
+  @override
+  String get calendarPreviousMonthSemanticsLabel => 'Previous month';
+
+  @override
+  String get calendarPreviousYearSemanticsLabel => 'Previous year';
+
+  @override
+  String get calendarPreviousYearsSemanticsLabel => 'Previous years';
 
   @override
   String get contextMenuSemanticsLabel => 'Context menu';
@@ -672,6 +780,24 @@ class FLocalizationsEnNz extends FLocalizationsEn {
   String get autocompleteNoResults => 'No matches found.';
 
   @override
+  String get calendarNextMonthSemanticsLabel => 'Next month';
+
+  @override
+  String get calendarNextYearSemanticsLabel => 'Next year';
+
+  @override
+  String get calendarNextYearsSemanticsLabel => 'Next years';
+
+  @override
+  String get calendarPreviousMonthSemanticsLabel => 'Previous month';
+
+  @override
+  String get calendarPreviousYearSemanticsLabel => 'Previous year';
+
+  @override
+  String get calendarPreviousYearsSemanticsLabel => 'Previous years';
+
+  @override
   String get contextMenuSemanticsLabel => 'Context menu';
 
   @override
@@ -772,6 +898,24 @@ class FLocalizationsEnSg extends FLocalizationsEn {
   String get autocompleteNoResults => 'No matches found.';
 
   @override
+  String get calendarNextMonthSemanticsLabel => 'Next month';
+
+  @override
+  String get calendarNextYearSemanticsLabel => 'Next year';
+
+  @override
+  String get calendarNextYearsSemanticsLabel => 'Next years';
+
+  @override
+  String get calendarPreviousMonthSemanticsLabel => 'Previous month';
+
+  @override
+  String get calendarPreviousYearSemanticsLabel => 'Previous year';
+
+  @override
+  String get calendarPreviousYearsSemanticsLabel => 'Previous years';
+
+  @override
   String get contextMenuSemanticsLabel => 'Context menu';
 
   @override
@@ -870,6 +1014,24 @@ class FLocalizationsEnZa extends FLocalizationsEn {
 
   @override
   String get autocompleteNoResults => 'No matches found.';
+
+  @override
+  String get calendarNextMonthSemanticsLabel => 'Next month';
+
+  @override
+  String get calendarNextYearSemanticsLabel => 'Next year';
+
+  @override
+  String get calendarNextYearsSemanticsLabel => 'Next years';
+
+  @override
+  String get calendarPreviousMonthSemanticsLabel => 'Previous month';
+
+  @override
+  String get calendarPreviousYearSemanticsLabel => 'Previous year';
+
+  @override
+  String get calendarPreviousYearsSemanticsLabel => 'Previous years';
 
   @override
   String get contextMenuSemanticsLabel => 'Context menu';

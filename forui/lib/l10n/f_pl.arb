@@ -30,5 +30,11 @@
   "textFieldEmailLabel": "E-mail",
   "passwordFieldLabel": "Hasło",
   "dateTimePickerToday": "Dziś",
-  "contextMenuSemanticsLabel": "Menu kontekstowe"
+  "contextMenuSemanticsLabel": "Menu kontekstowe",
+  "calendarPreviousMonthSemanticsLabel": "Poprzedni miesiąc",
+  "calendarNextMonthSemanticsLabel": "Następny miesiąc",
+  "calendarNextYearSemanticsLabel": "Następny rok",
+  "calendarPreviousYearSemanticsLabel": "Poprzedni rok",
+  "calendarNextYearsSemanticsLabel": "Następne lata",
+  "calendarPreviousYearsSemanticsLabel": "Poprzednie lata"
 }

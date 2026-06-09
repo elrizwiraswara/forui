@@ -72,6 +72,24 @@ class FLocalizationsSq extends FLocalizations {
   String get autocompleteNoResults => 'Nuk u gjetën përputhje.';
 
   @override
+  String get calendarNextMonthSemanticsLabel => 'Muaji tjetër';
+
+  @override
+  String get calendarNextYearSemanticsLabel => 'Viti tjetër';
+
+  @override
+  String get calendarNextYearsSemanticsLabel => 'Vitet e ardhshme';
+
+  @override
+  String get calendarPreviousMonthSemanticsLabel => 'Muaji i mëparshëm';
+
+  @override
+  String get calendarPreviousYearSemanticsLabel => 'Viti i mëparshëm';
+
+  @override
+  String get calendarPreviousYearsSemanticsLabel => 'Vitet e mëparshme';
+
+  @override
   String get contextMenuSemanticsLabel => 'Menyja e kontekstit';
 
   @override

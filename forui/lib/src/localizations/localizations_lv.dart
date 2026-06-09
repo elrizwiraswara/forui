@@ -72,6 +72,24 @@ class FLocalizationsLv extends FLocalizations {
   String get autocompleteNoResults => 'Nav atrasts neviens atbilstošs rezultāts.';
 
   @override
+  String get calendarNextMonthSemanticsLabel => 'Nākamais mēnesis';
+
+  @override
+  String get calendarNextYearSemanticsLabel => 'Nākamais gads';
+
+  @override
+  String get calendarNextYearsSemanticsLabel => 'Nākamie gadi';
+
+  @override
+  String get calendarPreviousMonthSemanticsLabel => 'Iepriekšējais mēnesis';
+
+  @override
+  String get calendarPreviousYearSemanticsLabel => 'Iepriekšējais gads';
+
+  @override
+  String get calendarPreviousYearsSemanticsLabel => 'Iepriekšējie gadi';
+
+  @override
   String get contextMenuSemanticsLabel => 'Konteksta izvēlne';
 
   @override

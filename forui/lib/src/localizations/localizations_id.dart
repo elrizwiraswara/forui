@@ -72,6 +72,24 @@ class FLocalizationsId extends FLocalizations {
   String get autocompleteNoResults => 'Tidak ada hasil yang cocok.';
 
   @override
+  String get calendarNextMonthSemanticsLabel => 'Bulan berikutnya';
+
+  @override
+  String get calendarNextYearSemanticsLabel => 'Tahun berikutnya';
+
+  @override
+  String get calendarNextYearsSemanticsLabel => 'Tahun-tahun berikutnya';
+
+  @override
+  String get calendarPreviousMonthSemanticsLabel => 'Bulan sebelumnya';
+
+  @override
+  String get calendarPreviousYearSemanticsLabel => 'Tahun sebelumnya';
+
+  @override
+  String get calendarPreviousYearsSemanticsLabel => 'Tahun-tahun sebelumnya';
+
+  @override
   String get contextMenuSemanticsLabel => 'Menu konteks';
 
   @override

@@ -72,6 +72,24 @@ class FLocalizationsIt extends FLocalizations {
   String get autocompleteNoResults => 'Nessuna corrispondenza trovata.';
 
   @override
+  String get calendarNextMonthSemanticsLabel => 'Mese successivo';
+
+  @override
+  String get calendarNextYearSemanticsLabel => 'Anno successivo';
+
+  @override
+  String get calendarNextYearsSemanticsLabel => 'Anni successivi';
+
+  @override
+  String get calendarPreviousMonthSemanticsLabel => 'Mese precedente';
+
+  @override
+  String get calendarPreviousYearSemanticsLabel => 'Anno precedente';
+
+  @override
+  String get calendarPreviousYearsSemanticsLabel => 'Anni precedenti';
+
+  @override
   String get contextMenuSemanticsLabel => 'Menu contestuale';
 
   @override

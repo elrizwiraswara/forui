@@ -30,5 +30,11 @@
   "textFieldEmailLabel": "E-mail",
   "passwordFieldLabel": "Parolă",
   "dateTimePickerToday": "Astăzi",
-  "contextMenuSemanticsLabel": "Meniu contextual"
+  "contextMenuSemanticsLabel": "Meniu contextual",
+  "calendarPreviousMonthSemanticsLabel": "Luna anterioară",
+  "calendarNextMonthSemanticsLabel": "Luna următoare",
+  "calendarNextYearSemanticsLabel": "Anul următor",
+  "calendarPreviousYearSemanticsLabel": "Anul precedent",
+  "calendarNextYearsSemanticsLabel": "Anii următori",
+  "calendarPreviousYearsSemanticsLabel": "Anii precedenți"
 }

@@ -30,5 +30,11 @@
   "textFieldEmailLabel": "Sähköposti",
   "passwordFieldLabel": "Salasana",
   "dateTimePickerToday": "Tänään",
-  "contextMenuSemanticsLabel": "Kontekstivalikko"
+  "contextMenuSemanticsLabel": "Kontekstivalikko",
+  "calendarPreviousMonthSemanticsLabel": "Edellinen kuukausi",
+  "calendarNextMonthSemanticsLabel": "Seuraava kuukausi",
+  "calendarNextYearSemanticsLabel": "Seuraava vuosi",
+  "calendarPreviousYearSemanticsLabel": "Edellinen vuosi",
+  "calendarNextYearsSemanticsLabel": "Seuraavat vuodet",
+  "calendarPreviousYearsSemanticsLabel": "Edelliset vuodet"
 }

@@ -30,5 +30,11 @@
   "textFieldEmailLabel": "E-post",
   "passwordFieldLabel": "Parool",
   "dateTimePickerToday": "Täna",
-  "contextMenuSemanticsLabel": "Kontekstimenüü"
+  "contextMenuSemanticsLabel": "Kontekstimenüü",
+  "calendarPreviousMonthSemanticsLabel": "Eelmine kuu",
+  "calendarNextMonthSemanticsLabel": "Järgmine kuu",
+  "calendarNextYearSemanticsLabel": "Järgmine aasta",
+  "calendarPreviousYearSemanticsLabel": "Eelmine aasta",
+  "calendarNextYearsSemanticsLabel": "Järgmised aastad",
+  "calendarPreviousYearsSemanticsLabel": "Eelmised aastad"
 }

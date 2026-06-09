@@ -29,5 +29,11 @@
   "textFieldEmailLabel": "Имэйл",
   "passwordFieldLabel": "Нууц үг",
   "dateTimePickerToday": "Өнөөдөр",
-  "contextMenuSemanticsLabel": "Контекст цэс"
+  "contextMenuSemanticsLabel": "Контекст цэс",
+  "calendarPreviousMonthSemanticsLabel": "Өмнөх сар",
+  "calendarNextMonthSemanticsLabel": "Дараагийн сар",
+  "calendarNextYearSemanticsLabel": "Дараа жил",
+  "calendarPreviousYearSemanticsLabel": "Өмнөх жил",
+  "calendarNextYearsSemanticsLabel": "Дараагийн жилүүд",
+  "calendarPreviousYearsSemanticsLabel": "Өмнөх жилүүд"
 }

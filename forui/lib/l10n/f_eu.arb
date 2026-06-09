@@ -30,5 +30,11 @@
   "textFieldEmailLabel": "Posta elektronikoa",
   "passwordFieldLabel": "Pasahitza",
   "dateTimePickerToday": "Gaur",
-  "contextMenuSemanticsLabel": "Testuinguru-menua"
+  "contextMenuSemanticsLabel": "Testuinguru-menua",
+  "calendarPreviousMonthSemanticsLabel": "Aurreko hilabetea",
+  "calendarNextMonthSemanticsLabel": "Hurrengo hilabetea",
+  "calendarNextYearSemanticsLabel": "Hurrengo urtea",
+  "calendarPreviousYearSemanticsLabel": "Aurreko urtea",
+  "calendarNextYearsSemanticsLabel": "Hurrengo urteak",
+  "calendarPreviousYearsSemanticsLabel": "Aurreko urteak"
 }

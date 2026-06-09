@@ -30,5 +30,11 @@
   "textFieldEmailLabel": "Barua pepe",
   "passwordFieldLabel": "Nenosiri",
   "dateTimePickerToday": "Leo",
-  "contextMenuSemanticsLabel": "Menyu ya muktadha"
+  "contextMenuSemanticsLabel": "Menyu ya muktadha",
+  "calendarPreviousMonthSemanticsLabel": "Mwezi uliopita",
+  "calendarNextMonthSemanticsLabel": "Mwezi ujao",
+  "calendarNextYearSemanticsLabel": "Mwaka unaofuata",
+  "calendarPreviousYearSemanticsLabel": "Mwaka uliopita",
+  "calendarNextYearsSemanticsLabel": "Miaka inayofuata",
+  "calendarPreviousYearsSemanticsLabel": "Miaka iliyopita"
 }

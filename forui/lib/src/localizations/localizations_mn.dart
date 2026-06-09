@@ -72,6 +72,24 @@ class FLocalizationsMn extends FLocalizations {
   String get autocompleteNoResults => 'Тохирох зүйл олдсонгүй.';
 
   @override
+  String get calendarNextMonthSemanticsLabel => 'Дараагийн сар';
+
+  @override
+  String get calendarNextYearSemanticsLabel => 'Дараа жил';
+
+  @override
+  String get calendarNextYearsSemanticsLabel => 'Дараагийн жилүүд';
+
+  @override
+  String get calendarPreviousMonthSemanticsLabel => 'Өмнөх сар';
+
+  @override
+  String get calendarPreviousYearSemanticsLabel => 'Өмнөх жил';
+
+  @override
+  String get calendarPreviousYearsSemanticsLabel => 'Өмнөх жилүүд';
+
+  @override
   String get contextMenuSemanticsLabel => 'Контекст цэс';
 
   @override

@@ -1,37 +1,111 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:meta/meta.dart';
-import 'package:sugar/sugar.dart';
 
 import 'package:forui/forui.dart';
-import 'package:forui/src/widgets/calendar/day/day_picker.dart';
-import 'package:forui/src/widgets/calendar/day/paged_day_picker.dart';
-import 'package:forui/src/widgets/calendar/shared/header.dart';
-import 'package:forui/src/widgets/calendar/year_month_picker.dart';
-
-import 'package:forui/src/widgets/calendar/calendar_controller.dart'
-    show FCalendarManagedControl, InternalFCalendarControl;
+import 'package:forui/src/widgets/calendar/calendar_controller.dart';
+import 'package:forui/src/widgets/calendar/date_selection_controller.dart';
+import 'package:forui/src/widgets/calendar/grid_calendar.dart';
+import 'package:forui/src/widgets/calendar/wheel_calendar.dart';
 
 part 'calendar.design.dart';
+
+/// Builds a [FCalendar]'s header. The [child] is the always default header for the currently shown picker.
+typedef FCalendarHeaderBuilder<C extends FCalendarController> =
+    Widget Function(BuildContext context, C controller, FDateSelectionController selectionController, Widget child);
+
+/// Builds a [FCalendar]'s footer, shown below the picker.
+typedef FCalendarFooterBuilder<C extends FCalendarController> =
+    Widget Function(BuildContext context, C controller, FDateSelectionController selectionController);
 
 /// A calendar.
 ///
 /// The calendar pages are designed to be navigable through swipe gestures on mobile Android, iOS & iPadOS, allowing
 /// left and right swipes to transition between pages.
 ///
-/// All [DateTime]s are in UTC timezone. A [FCalendarControl] is used to customize the date selection behavior.
-/// [DateTime]s outside [start] and [end] are unselectable regardless of the [FCalendarControl] used.
+/// All [DateTime]s are in UTC timezone. A [FDateSelectionControl] is used to customize the date selection behavior.
+/// [DateTime]s outside the start and end dates are unselectable.
 ///
 /// See:
 /// * https://forui.dev/docs/widgets/data/calendar for working examples.
-/// * [FCalendarControl] for customizing a calendar's date selection behavior.
+/// * [FCalendarControl] for programmatically controlling a calendar.
+/// * [FDateSelectionControl] for customizing date selection behavior.
 /// * [FCalendarStyle] for customizing a calendar's appearance.
 class FCalendar extends StatefulWidget {
-  /// The default day builder.
-  static Widget defaultDayBuilder(BuildContext _, FCalendarDayData data, Widget? child) => child!;
+  /// The default [FCalendarHeaderBuilder] which returns the given [child] unchanged.
+  static Widget defaultHeaderBuilder<C extends FCalendarController>(
+    BuildContext context,
+    C controller,
+    FDateSelectionController selectionController,
+    Widget child,
+  ) => child;
 
-  /// The style. Defaults to [FThemeData.calendarStyle].
+  /// The default [FCalendarFooterBuilder] which renders no footer.
+  static Widget defaultFooterBuilder<C extends FCalendarController>(
+    BuildContext context,
+    C controller,
+    FDateSelectionController selectionController,
+  ) => const SizedBox.shrink();
+
+  /// The default [FCalendarDayBuilder] for a day picker.
+  static Widget defaultDayBuilder(
+    BuildContext context,
+    FCalendarDayStyles styles,
+    FLocalizations localizations,
+    DateTime date,
+    Set<FCalendarDayVariant> variants,
+  ) {
+    final style = styles.resolve(variants);
+    return DecoratedBox(
+      decoration: style.background,
+      child: DecoratedBox(
+        decoration: style.foreground,
+        child: Center(child: Text(localizations.day(date), style: style.textStyle)),
+      ),
+    );
+  }
+
+  /// The default [FCalendarMonthBuilder] for a month picker.
+  static Widget defaultMonthBuilder(
+    BuildContext context,
+    FCalendarMonthStyles styles,
+    FLocalizations localizations,
+    DateTime date,
+    Set<FCalendarMonthVariant> variants,
+  ) {
+    final style = styles.resolve(variants);
+    return DecoratedBox(
+      decoration: style.decoration,
+      child: Center(child: Text(localizations.abbreviatedMonth(date), style: style.textStyle)),
+    );
+  }
+
+  /// The default [FCalendarYearBuilder] for a year picker.
+  static Widget defaultYearBuilder(
+    BuildContext context,
+    FCalendarYearStyles styles,
+    FLocalizations localizations,
+    DateTime date,
+    Set<FCalendarYearVariant> variants,
+  ) {
+    final style = styles.resolve(variants);
+    return DecoratedBox(
+      decoration: style.decoration,
+      child: Center(child: Text(localizations.year(date), style: style.textStyle)),
+    );
+  }
+
+  /// Defines how this calendar's navigation is controlled.
+  final FCalendarControl control;
+
+  /// Defines how this calendar's date selection is controlled.
+  final FDateSelectionControl selectionControl;
+
+  /// The style.
   ///
   /// To modify the current style:
   /// ```dart
@@ -51,68 +125,217 @@ class FCalendar extends StatefulWidget {
   /// ```
   final FCalendarStyleDelta style;
 
-  /// Controls how dates are selected.
-  final FCalendarControl<Object?> control;
+  /// A callback for when a day in a day picker is pressed.
+  final FutureOr<void> Function(DateTime)? onDayPress;
 
-  /// The builder used to build a day in the day picker. Defaults to returning the given child.
-  ///
-  /// The `child` is the default content with no alterations. Consider wrapping the `child` and other custom decoration
-  /// in a [Stack] to avoid re-creating the custom day content from scratch.
-  final ValueWidgetBuilder<FCalendarDayData> dayBuilder;
+  /// A callback for when a date in a day picker is long pressed.
+  final FutureOr<void> Function(DateTime)? onDayLongPress;
 
-  /// The start date, inclusive. It is truncated to the nearest date. Defaults to 1st January, 1900.
-  ///
-  /// ## Contract
-  /// Throws [AssertionError] if [end] <= [start].
-  final DateTime start;
+  /// Builds the inner calendar widget for the chosen variant from its resolved controller and presentation inputs.
+  final Widget Function(
+    BuildContext context,
+    FCalendarController controller,
+    FDateSelectionController selectionController,
+    FCalendarStyle style,
+    FLocalizations localizations,
+    double width,
+    double height,
+    ValueChanged<DateTime> onDayPress,
+    ValueChanged<DateTime> onDayLongPress,
+  )
+  _builder;
 
-  /// The end date, exclusive. It is truncated to the nearest date. Defaults to 1st January, 2100.
-  ///
-  /// ## Contract
-  /// Throws [AssertionError] if [end] <= [start].
-  final DateTime end;
+  /// Creates a [FCalendar] that cycles through the day, month and year grid pickers.
+  FCalendar.grid({
+    required FDateSelectionControl selectionControl,
+    FGridCalendarControl control = const FGridCalendarControl(),
+    FCalendarStyleDelta style = const .context(),
+    ScrollPhysics? dayScrollPhysics,
+    ScrollCacheExtent? dayScrollCacheExtent,
+    ScrollBehavior? dayScrollBehavior,
+    ScrollPhysics? monthScrollPhysics,
+    ScrollCacheExtent? monthScrollCacheExtent,
+    ScrollBehavior? monthScrollBehavior,
+    ScrollPhysics? yearScrollPhysics,
+    ScrollCacheExtent? yearScrollCacheExtent,
+    ScrollBehavior? yearScrollBehavior,
+    FCalendarHeaderBuilder<FGridCalendarController> headerBuilder = defaultHeaderBuilder,
+    FCalendarFooterBuilder<FGridCalendarController> footerBuilder = defaultFooterBuilder,
+    FCalendarDayBuilder dayBuilder = defaultDayBuilder,
+    FCalendarMonthBuilder monthBuilder = defaultMonthBuilder,
+    FCalendarYearBuilder yearBuilder = defaultYearBuilder,
+    FutureOr<void> Function(DateTime)? onDayPress,
+    FutureOr<void> Function(DateTime)? onDayLongPress,
+    Key? key,
+  }) : this._(
+         control: control,
+         selectionControl: selectionControl,
+         style: style,
+         onDayPress: onDayPress,
+         onDayLongPress: onDayLongPress,
+         key: key,
+         builder:
+             (
+               context,
+               controller,
+               selectionController,
+               style,
+               localizations,
+               width,
+               height,
+               onDayPress,
+               onDayLongPress,
+             ) => GridCalendar(
+               controller: controller as FGridCalendarController,
+               selectionController: selectionController,
+               style: style,
+               localizations: localizations,
+               width: width,
+               height: height,
+               dayScrollPhysics: dayScrollPhysics,
+               dayScrollCacheExtent: dayScrollCacheExtent,
+               dayScrollBehavior: dayScrollBehavior,
+               monthScrollPhysics: monthScrollPhysics,
+               monthScrollCacheExtent: monthScrollCacheExtent,
+               monthScrollBehavior: monthScrollBehavior,
+               yearScrollPhysics: yearScrollPhysics,
+               yearScrollCacheExtent: yearScrollCacheExtent,
+               yearScrollBehavior: yearScrollBehavior,
+               onDayPress: onDayPress,
+               onDayLongPress: onDayLongPress,
+               headerBuilder: headerBuilder,
+               footerBuilder: footerBuilder,
+               dayBuilder: dayBuilder,
+               monthBuilder: monthBuilder,
+               yearBuilder: yearBuilder,
+             ),
+       );
 
-  /// The current date. It is truncated to the nearest date. Defaults to the [DateTime.now].
-  final DateTime today;
+  /// Creates a [FCalendar] with a split header whose month and year grid pickers are independently togglable.
+  FCalendar.splitGrid({
+    required FDateSelectionControl selectionControl,
+    FGridSplitCalendarControl control = const FGridSplitCalendarControl(),
+    FCalendarStyleDelta style = const .context(),
+    ScrollPhysics? dayScrollPhysics,
+    ScrollCacheExtent? dayScrollCacheExtent,
+    ScrollBehavior? dayScrollBehavior,
+    ScrollPhysics? yearScrollPhysics,
+    ScrollCacheExtent? yearScrollCacheExtent,
+    ScrollBehavior? yearScrollBehavior,
+    FCalendarHeaderBuilder<FGridSplitCalendarController> headerBuilder = defaultHeaderBuilder,
+    FCalendarFooterBuilder<FGridSplitCalendarController> footerBuilder = defaultFooterBuilder,
+    FCalendarDayBuilder dayBuilder = defaultDayBuilder,
+    FCalendarMonthBuilder monthBuilder = defaultMonthBuilder,
+    FCalendarYearBuilder yearBuilder = defaultYearBuilder,
+    FutureOr<void> Function(DateTime)? onDayPress,
+    FutureOr<void> Function(DateTime)? onDayLongPress,
+    Key? key,
+  }) : this._(
+         control: control,
+         selectionControl: selectionControl,
+         style: style,
+         onDayPress: onDayPress,
+         onDayLongPress: onDayLongPress,
+         key: key,
+         builder:
+             (
+               context,
+               controller,
+               selectionController,
+               style,
+               localizations,
+               width,
+               height,
+               onDayPress,
+               onDayLongPress,
+             ) => GridSplitCalendar(
+               controller: controller as FGridSplitCalendarController,
+               selectionController: selectionController,
+               style: style,
+               localizations: localizations,
+               width: width,
+               height: height,
+               dayScrollPhysics: dayScrollPhysics,
+               dayScrollCacheExtent: dayScrollCacheExtent,
+               dayScrollBehavior: dayScrollBehavior,
+               yearScrollPhysics: yearScrollPhysics,
+               yearScrollCacheExtent: yearScrollCacheExtent,
+               yearScrollBehavior: yearScrollBehavior,
+               onPress: onDayPress,
+               onLongPress: onDayLongPress,
+               headerBuilder: headerBuilder,
+               footerBuilder: footerBuilder,
+               dayBuilder: dayBuilder,
+               monthBuilder: monthBuilder,
+               yearBuilder: yearBuilder,
+             ),
+       );
 
-  /// A callback for when the displayed month changes.
-  final ValueChanged<DateTime>? onMonthChange;
+  /// Creates a [FCalendar] that toggles between a day grid picker and a month-year wheel picker.
+  FCalendar.wheel({
+    required FDateSelectionControl selectionControl,
+    FWheelCalendarControl control = const FWheelCalendarControl(),
+    FCalendarStyleDelta style = const .context(),
+    ScrollPhysics? dayScrollPhysics,
+    ScrollCacheExtent? dayScrollCacheExtent,
+    ScrollBehavior? dayScrollBehavior,
+    bool loop = false,
+    int monthFlex = 1,
+    int yearFlex = 1,
+    FCalendarHeaderBuilder<FWheelCalendarController> headerBuilder = defaultHeaderBuilder,
+    FCalendarFooterBuilder<FWheelCalendarController> footerBuilder = defaultFooterBuilder,
+    FCalendarDayBuilder dayBuilder = defaultDayBuilder,
+    FutureOr<void> Function(DateTime)? onDayPress,
+    FutureOr<void> Function(DateTime)? onDayLongPress,
+    Key? key,
+  }) : this._(
+         control: control,
+         selectionControl: selectionControl,
+         style: style,
+         onDayPress: onDayPress,
+         onDayLongPress: onDayLongPress,
+         key: key,
+         builder:
+             (
+               context,
+               controller,
+               selectionController,
+               style,
+               localizations,
+               width,
+               height,
+               onDayPress,
+               onDayLongPress,
+             ) => WheelCalendar(
+               controller: controller as FWheelCalendarController,
+               selectionController: selectionController,
+               style: style,
+               localizations: localizations,
+               width: width,
+               height: height,
+               dayScrollPhysics: dayScrollPhysics,
+               dayScrollCacheExtent: dayScrollCacheExtent,
+               dayScrollBehavior: dayScrollBehavior,
+               loop: loop,
+               monthFlex: monthFlex,
+               yearFlex: yearFlex,
+               onDayPress: onDayPress,
+               onDayLongPress: onDayLongPress,
+               headerBuilder: headerBuilder,
+               footerBuilder: footerBuilder,
+               dayBuilder: dayBuilder,
+             ),
+       );
 
-  /// A callback for when a date in a [FCalendarPickerType.day] picker is pressed.
-  final ValueChanged<DateTime>? onPress;
-
-  /// A callback for when a date in a [FCalendarPickerType.day] picker is long pressed.
-  final ValueChanged<DateTime>? onLongPress;
-
-  final FCalendarPickerType _initialType;
-  final LocalDate _initialMonth;
-
-  /// Creates a [FCalendar].
-  ///
-  /// Subsequently changing [_initialType] has no effect.
-  ///
-  /// [initialMonth] defaults to [today]. It is truncated to the nearest date. Subsequently changing [initialMonth] has
-  /// no effect. To change the selected date, change the key to create a new [FCalendar], and provide that widget the
-  /// new [initialMonth]. This will reset the widget's interactive state.
-  FCalendar({
+  const FCalendar._({
     required this.control,
+    required this.selectionControl,
+    required this._builder,
     this.style = const .context(),
-    this.dayBuilder = defaultDayBuilder,
-    this.onMonthChange,
-    this.onPress,
-    this.onLongPress,
-    this._initialType = .day,
-    DateTime? start,
-    DateTime? end,
-    DateTime? today,
-    DateTime? initialMonth,
+    this.onDayPress,
+    this.onDayLongPress,
     super.key,
-  }) : start = start ?? DateTime(1900),
-       end = end ?? DateTime(2100),
-       today = today ?? .now(),
-       _initialMonth = (initialMonth ?? today ?? .now()).toLocalDate().truncate(to: .months) {
-    assert(this.start.toLocalDate() < this.end.toLocalDate(), 'start ($start) must be < end ($end)');
-  }
+  });
 
   @override
   State<FCalendar> createState() => _State();
@@ -121,103 +344,80 @@ class FCalendar extends StatefulWidget {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties
-      ..add(DiagnosticsProperty('style', style))
       ..add(DiagnosticsProperty('control', control))
-      ..add(ObjectFlagProperty.has('dayBuilder', dayBuilder))
-      ..add(DiagnosticsProperty('start', start))
-      ..add(DiagnosticsProperty('end', end))
-      ..add(DiagnosticsProperty('today', today))
-      ..add(ObjectFlagProperty.has('onMonthChange', onMonthChange))
-      ..add(ObjectFlagProperty.has('onPress', onPress))
-      ..add(ObjectFlagProperty.has('onLongPress', onLongPress));
+      ..add(DiagnosticsProperty('selectionControl', selectionControl))
+      ..add(DiagnosticsProperty('style', style))
+      ..add(ObjectFlagProperty.has('onDayPress', onDayPress))
+      ..add(ObjectFlagProperty.has('onDayLongPress', onDayLongPress));
   }
 }
 
 class _State extends State<FCalendar> {
-  late FCalendarController<Object?> _controller;
-  late ValueNotifier<FCalendarPickerType> _type;
-  late ValueNotifier<LocalDate> _month;
+  late FCalendarController _controller;
+  late FDateSelectionController _selectionController;
 
   @override
   void initState() {
     super.initState();
     _controller = widget.control.create(_handleOnChange);
-    _type = ValueNotifier(widget._initialType);
-    _month = ValueNotifier(widget._initialMonth);
+    _selectionController = widget.selectionControl.create(_handleOnSelectionChange);
   }
 
   @override
   void didUpdateWidget(covariant FCalendar old) {
     super.didUpdateWidget(old);
     _controller = widget.control.update(old.control, _controller, _handleOnChange).$1;
+    _selectionController = widget.selectionControl
+        .update(old.selectionControl, _selectionController, _handleOnSelectionChange)
+        .$1;
   }
 
   @override
   void dispose() {
-    _month.dispose();
-    _type.dispose();
+    widget.selectionControl.dispose(_selectionController, _handleOnSelectionChange);
     widget.control.dispose(_controller, _handleOnChange);
     super.dispose();
   }
 
-  void _handleOnChange() {
-    if (widget.control case final FCalendarManagedControl managed) {
-      managed.handleOnChange(_controller);
+  void _handleOnChange() {}
+
+  void _handleOnSelectionChange() {
+    if (widget.selectionControl case final FDateSelectionManagedControl control) {
+      control.handleOnChange(_selectionController);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final style = widget.style(context.theme.calendarStyle);
-    final tileSize = style.dayPickerStyle.tileSize;
-    return DecoratedBox(
+    final localizations = FLocalizations.of(context) ?? FDefaultLocalizations();
+
+    // The month and year grids are shorter than the day grid; pad them to its height so swapping views causes no
+    // layout shift, leaving the extra space below the grid.
+    final width = DateTime.daysPerWeek * style.dayPickerStyle.daySize.width;
+    final height = 7 * style.dayPickerStyle.daySize.height + (7 - 1) * style.dayPickerStyle.daySpacing;
+
+    return Container(
       decoration: style.decoration,
-      child: Padding(
-        padding: style.padding,
-        child: SizedBox(
-          height: (DayPicker.maxRows * tileSize) + Header.height(style.headerStyle) + 7,
-          width: DateTime.daysPerWeek * tileSize,
-          child: Stack(
-            alignment: .topCenter,
-            children: [
-              ValueListenableBuilder(
-                valueListenable: _month,
-                builder: (_, month, _) => Header(style: style.headerStyle, type: _type, month: month),
-              ),
-              ValueListenableBuilder(
-                valueListenable: _type,
-                builder: (_, value, _) => switch (value) {
-                  FCalendarPickerType.day => PagedDayPicker(
-                    style: style,
-                    dayBuilder: widget.dayBuilder,
-                    start: widget.start.toLocalDate(),
-                    end: widget.end.toLocalDate(),
-                    today: widget.today.toLocalDate(),
-                    initial: _month.value,
-                    selectable: (date) => _controller.selectable(date.toNative()),
-                    selected: (date) => _controller.selected(date.toNative()),
-                    onMonthChange: (date) {
-                      _month.value = date;
-                      widget.onMonthChange?.call(date.toNative());
-                    },
-                    onPress: (date) {
-                      final native = date.toNative();
-                      _controller.select(native);
-                      widget.onPress?.call(native);
-                    },
-                    onLongPress: (date) => widget.onLongPress?.call(date.toNative()),
-                  ),
-                  FCalendarPickerType.yearMonth => YearMonthPicker(
-                    style: style,
-                    start: widget.start.toLocalDate(),
-                    end: widget.end.toLocalDate(),
-                    today: widget.today.toLocalDate(),
-                    month: _month,
-                    type: _type,
-                  ),
-                },
-              ),
-            ],
+      padding: style.padding,
+      child: FocusScope(
+        child: ListenableBuilder(
+          listenable: _selectionController,
+          builder: (context, _) => widget._builder(
+            context,
+            _controller,
+            _selectionController,
+            style,
+            localizations,
+            width,
+            height,
+            (date) async {
+              if (widget.onDayPress?.call(date) case final Future<void> future) {
+                await future;
+              }
+              _selectionController.select(date);
+            },
+            widget.onDayLongPress ?? (_) {},
           ),
         ),
       ),
@@ -225,7 +425,7 @@ class _State extends State<FCalendar> {
   }
 }
 
-/// The calendar's style.
+/// [FCalendar]'s style.
 class FCalendarStyle with Diagnosticable, _$FCalendarStyleFunctions {
   /// The header's style.
   @override
@@ -235,9 +435,17 @@ class FCalendarStyle with Diagnosticable, _$FCalendarStyleFunctions {
   @override
   final FCalendarDayPickerStyle dayPickerStyle;
 
-  /// The year/month picker's style.
+  /// The month picker's style.
   @override
-  final FCalendarEntryStyle yearMonthPickerStyle;
+  final FCalendarMonthPickerStyle monthPickerStyle;
+
+  /// The year picker's style.
+  @override
+  final FCalendarYearPickerStyle yearPickerStyle;
+
+  /// The wheel picker's style.
+  @override
+  final FPickerStyle wheelPickerStyle;
 
   /// The decoration surrounding the header & picker.
   @override
@@ -247,18 +455,15 @@ class FCalendarStyle with Diagnosticable, _$FCalendarStyleFunctions {
   @override
   final EdgeInsetsGeometry padding;
 
-  /// The duration of the page switch animation. Defaults to 200 milliseconds.
-  @override
-  final Duration pageAnimationDuration;
-
-  /// Creates a new [FCalendarStyle].
+  /// Creates a [FCalendarStyle].
   FCalendarStyle({
     required this.headerStyle,
     required this.dayPickerStyle,
-    required this.yearMonthPickerStyle,
+    required this.monthPickerStyle,
+    required this.yearPickerStyle,
+    required this.wheelPickerStyle,
     required this.decoration,
     this.padding = const .all(12),
-    this.pageAnimationDuration = const Duration(milliseconds: 200),
   });
 
   /// Creates a [FCalendarStyle] that inherits its properties.
@@ -267,44 +472,26 @@ class FCalendarStyle with Diagnosticable, _$FCalendarStyleFunctions {
     required FTypography typography,
     required FIcons icons,
     required FStyle style,
+    required FHapticFeedback hapticFeedback,
     required bool touch,
-  }) {
-    final borderRadius = style.borderRadius.md;
-    return FCalendarStyle(
-      headerStyle: .inherit(colors: colors, typography: typography, icons: icons, style: style, touch: touch),
-      dayPickerStyle: .inherit(colors: colors, typography: typography, style: style, touch: touch),
-      yearMonthPickerStyle: FCalendarEntryStyle(
-        backgroundColor: FVariants(
-          colors.card,
-          variants: {
-            [.hovered, .pressed]: colors.secondary,
-            //
-            [.disabled]: colors.card,
-          },
-        ),
-        borderSide: FVariants<FTappableVariantConstraint, FTappableVariant, BorderSide?, Delta>(
-          null,
-          variants: {
-            [.focused]: BorderSide(color: colors.foreground, width: style.borderWidth),
-            //
-            [.disabled]: null,
-          },
-        ),
-        textStyle: FVariants.from(
-          typography.sm.copyWith(color: colors.foreground, fontWeight: .w500),
-          variants: {
-            [.disabled]: .delta(color: colors.disable(colors.foreground)),
-          },
-        ),
-        borderRadius: borderRadius,
+  }) => FCalendarStyle(
+    headerStyle: .inherit(colors: colors, typography: typography, icons: icons, style: style, touch: touch),
+    dayPickerStyle: .inherit(colors: colors, typography: typography, style: style, touch: touch),
+    monthPickerStyle: .inherit(colors: colors, typography: typography, style: style),
+    yearPickerStyle: .inherit(colors: colors, typography: typography, style: style),
+    wheelPickerStyle: .inherit(
+      colors: colors,
+      style: style,
+      typography: typography,
+      hapticFeedback: hapticFeedback,
+      touch: touch,
+    ),
+    decoration: ShapeDecoration(
+      shape: RoundedSuperellipseBorder(
+        side: BorderSide(color: colors.border, width: style.borderWidth),
+        borderRadius: style.borderRadius.md,
       ),
-      decoration: ShapeDecoration(
-        shape: RoundedSuperellipseBorder(
-          side: BorderSide(color: colors.border, width: style.borderWidth),
-          borderRadius: borderRadius,
-        ),
-        color: colors.card,
-      ),
-    );
-  }
+      color: colors.card,
+    ),
+  );
 }

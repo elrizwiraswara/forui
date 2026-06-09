@@ -30,5 +30,11 @@
   "textFieldEmailLabel": "ਈਮੇਲ",
   "passwordFieldLabel": "ਪਾਸਵਰਡ",
   "dateTimePickerToday": "ਅੱਜ",
-  "contextMenuSemanticsLabel": "ਸੰਦਰਭ ਮੀਨੂ"
+  "contextMenuSemanticsLabel": "ਸੰਦਰਭ ਮੀਨੂ",
+  "calendarPreviousMonthSemanticsLabel": "ਪਿਛਲਾ ਮਹੀਨਾ",
+  "calendarNextMonthSemanticsLabel": "ਅਗਲਾ ਮਹੀਨਾ",
+  "calendarNextYearSemanticsLabel": "ਅਗਲਾ ਸਾਲ",
+  "calendarPreviousYearSemanticsLabel": "ਪਿਛਲਾ ਸਾਲ",
+  "calendarNextYearsSemanticsLabel": "ਅਗਲੇ ਸਾਲ",
+  "calendarPreviousYearsSemanticsLabel": "ਪਿਛਲੇ ਸਾਲ"
 }

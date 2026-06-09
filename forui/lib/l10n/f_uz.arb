@@ -30,5 +30,11 @@
   "textFieldEmailLabel": "Elektron pochta",
   "passwordFieldLabel": "Parol",
   "dateTimePickerToday": "Bugun",
-  "contextMenuSemanticsLabel": "Kontekst menyusi"
+  "contextMenuSemanticsLabel": "Kontekst menyusi",
+  "calendarPreviousMonthSemanticsLabel": "Oldingi oy",
+  "calendarNextMonthSemanticsLabel": "Keyingi oy",
+  "calendarNextYearSemanticsLabel": "Keyingi yil",
+  "calendarPreviousYearSemanticsLabel": "Oldingi yil",
+  "calendarNextYearsSemanticsLabel": "Keyingi yillar",
+  "calendarPreviousYearsSemanticsLabel": "Oldingi yillar"
 }

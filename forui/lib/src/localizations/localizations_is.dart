@@ -72,6 +72,24 @@ class FLocalizationsIs extends FLocalizations {
   String get autocompleteNoResults => 'Engar niðurstöður fundust.';
 
   @override
+  String get calendarNextMonthSemanticsLabel => 'Næsti mánuður';
+
+  @override
+  String get calendarNextYearSemanticsLabel => 'Næsta ár';
+
+  @override
+  String get calendarNextYearsSemanticsLabel => 'Næstu ár';
+
+  @override
+  String get calendarPreviousMonthSemanticsLabel => 'Fyrri mánuður';
+
+  @override
+  String get calendarPreviousYearSemanticsLabel => 'Fyrra ár';
+
+  @override
+  String get calendarPreviousYearsSemanticsLabel => 'Fyrri ár';
+
+  @override
   String get contextMenuSemanticsLabel => 'Samhengisvalmynd';
 
   @override

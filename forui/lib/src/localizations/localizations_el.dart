@@ -72,6 +72,24 @@ class FLocalizationsEl extends FLocalizations {
   String get autocompleteNoResults => 'Δεν βρέθηκαν αντιστοιχίες.';
 
   @override
+  String get calendarNextMonthSemanticsLabel => 'Επόμενος μήνας';
+
+  @override
+  String get calendarNextYearSemanticsLabel => 'Επόμενο έτος';
+
+  @override
+  String get calendarNextYearsSemanticsLabel => 'Επόμενα έτη';
+
+  @override
+  String get calendarPreviousMonthSemanticsLabel => 'Προηγούμενος μήνας';
+
+  @override
+  String get calendarPreviousYearSemanticsLabel => 'Προηγούμενο έτος';
+
+  @override
+  String get calendarPreviousYearsSemanticsLabel => 'Προηγούμενα έτη';
+
+  @override
   String get contextMenuSemanticsLabel => 'Μενού περιβάλλοντος';
 
   @override

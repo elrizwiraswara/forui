@@ -30,5 +30,11 @@
   "textFieldEmailLabel": "E-post",
   "passwordFieldLabel": "Lösenord",
   "dateTimePickerToday": "Idag",
-  "contextMenuSemanticsLabel": "Kontextmeny"
+  "contextMenuSemanticsLabel": "Kontextmeny",
+  "calendarPreviousMonthSemanticsLabel": "Föregående månad",
+  "calendarNextMonthSemanticsLabel": "Nästa månad",
+  "calendarNextYearSemanticsLabel": "Nästa år",
+  "calendarPreviousYearSemanticsLabel": "Föregående år",
+  "calendarNextYearsSemanticsLabel": "Nästa år",
+  "calendarPreviousYearsSemanticsLabel": "Föregående år"
 }

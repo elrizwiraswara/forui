@@ -29,5 +29,11 @@
   "textFieldEmailLabel": "Email",
   "passwordFieldLabel": "Κωδικός πρόσβασης",
   "dateTimePickerToday": "Σήμερα",
-  "contextMenuSemanticsLabel": "Μενού περιβάλλοντος"
+  "contextMenuSemanticsLabel": "Μενού περιβάλλοντος",
+  "calendarPreviousMonthSemanticsLabel": "Προηγούμενος μήνας",
+  "calendarNextMonthSemanticsLabel": "Επόμενος μήνας",
+  "calendarNextYearSemanticsLabel": "Επόμενο έτος",
+  "calendarPreviousYearSemanticsLabel": "Προηγούμενο έτος",
+  "calendarNextYearsSemanticsLabel": "Επόμενα έτη",
+  "calendarPreviousYearsSemanticsLabel": "Προηγούμενα έτη"
 }

@@ -30,5 +30,11 @@
   "textFieldEmailLabel": "E-pošta",
   "passwordFieldLabel": "Lozinka",
   "dateTimePickerToday": "Danas",
-  "contextMenuSemanticsLabel": "Kontekstni meni"
+  "contextMenuSemanticsLabel": "Kontekstni meni",
+  "calendarPreviousMonthSemanticsLabel": "Prethodni mjesec",
+  "calendarNextMonthSemanticsLabel": "Sljedeći mjesec",
+  "calendarNextYearSemanticsLabel": "Sljedeća godina",
+  "calendarPreviousYearSemanticsLabel": "Prethodna godina",
+  "calendarNextYearsSemanticsLabel": "Sljedeće godine",
+  "calendarPreviousYearsSemanticsLabel": "Prethodne godine"
 }

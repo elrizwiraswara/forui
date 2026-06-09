@@ -29,5 +29,11 @@
   "textFieldEmailLabel": "Электронная почта",
   "passwordFieldLabel": "Пароль",
   "dateTimePickerToday": "Сегодня",
-  "contextMenuSemanticsLabel": "Контекстное меню"
+  "contextMenuSemanticsLabel": "Контекстное меню",
+  "calendarPreviousMonthSemanticsLabel": "Предыдущий месяц",
+  "calendarNextMonthSemanticsLabel": "Следующий месяц",
+  "calendarNextYearSemanticsLabel": "Следующий год",
+  "calendarPreviousYearSemanticsLabel": "Предыдущий год",
+  "calendarNextYearsSemanticsLabel": "Следующие годы",
+  "calendarPreviousYearsSemanticsLabel": "Предыдущие годы"
 }

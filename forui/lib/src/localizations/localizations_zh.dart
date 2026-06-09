@@ -72,6 +72,24 @@ class FLocalizationsZh extends FLocalizations {
   String get autocompleteNoResults => '未找到匹配项.';
 
   @override
+  String get calendarNextMonthSemanticsLabel => '下个月';
+
+  @override
+  String get calendarNextYearSemanticsLabel => '下一年';
+
+  @override
+  String get calendarNextYearsSemanticsLabel => '后几年';
+
+  @override
+  String get calendarPreviousMonthSemanticsLabel => '上个月';
+
+  @override
+  String get calendarPreviousYearSemanticsLabel => '上一年';
+
+  @override
+  String get calendarPreviousYearsSemanticsLabel => '前几年';
+
+  @override
   String get contextMenuSemanticsLabel => '上下文菜单';
 
   @override
@@ -172,6 +190,24 @@ class FLocalizationsZhHk extends FLocalizationsZh {
   String get autocompleteNoResults => '未找到匹配項.';
 
   @override
+  String get calendarNextMonthSemanticsLabel => '下個月';
+
+  @override
+  String get calendarNextYearSemanticsLabel => '下一年';
+
+  @override
+  String get calendarNextYearsSemanticsLabel => '後幾年';
+
+  @override
+  String get calendarPreviousMonthSemanticsLabel => '上個月';
+
+  @override
+  String get calendarPreviousYearSemanticsLabel => '上一年';
+
+  @override
+  String get calendarPreviousYearsSemanticsLabel => '前幾年';
+
+  @override
   String get contextMenuSemanticsLabel => '快捷選單';
 
   @override
@@ -270,6 +306,24 @@ class FLocalizationsZhTw extends FLocalizationsZh {
 
   @override
   String get autocompleteNoResults => '未找到匹配項.';
+
+  @override
+  String get calendarNextMonthSemanticsLabel => '下個月';
+
+  @override
+  String get calendarNextYearSemanticsLabel => '下一年';
+
+  @override
+  String get calendarNextYearsSemanticsLabel => '後幾年';
+
+  @override
+  String get calendarPreviousMonthSemanticsLabel => '上個月';
+
+  @override
+  String get calendarPreviousYearSemanticsLabel => '上一年';
+
+  @override
+  String get calendarPreviousYearsSemanticsLabel => '前幾年';
 
   @override
   String get contextMenuSemanticsLabel => '快捷選單';

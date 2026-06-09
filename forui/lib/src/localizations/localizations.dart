@@ -340,6 +340,42 @@ abstract class FLocalizations {
   /// **'No matches found.'**
   String get autocompleteNoResults;
 
+  /// The label for the calendar header's next-month navigation button.
+  ///
+  /// In en, this message translates to:
+  /// **'Next month'**
+  String get calendarNextMonthSemanticsLabel;
+
+  /// The label for the calendar header's next-year navigation button.
+  ///
+  /// In en, this message translates to:
+  /// **'Next year'**
+  String get calendarNextYearSemanticsLabel;
+
+  /// The label for the calendar header's next-years navigation button.
+  ///
+  /// In en, this message translates to:
+  /// **'Next years'**
+  String get calendarNextYearsSemanticsLabel;
+
+  /// The label for the calendar header's previous-month navigation button.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous month'**
+  String get calendarPreviousMonthSemanticsLabel;
+
+  /// The label for the calendar header's previous-year navigation button.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous year'**
+  String get calendarPreviousYearSemanticsLabel;
+
+  /// The label for the calendar header's previous-years navigation button.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous years'**
+  String get calendarPreviousYearsSemanticsLabel;
+
   /// The semantic label for a context menu.
   ///
   /// In en, this message translates to:

@@ -29,5 +29,11 @@
   "textFieldEmailLabel": "דוא״ל",
   "passwordFieldLabel": "סיסמה",
   "dateTimePickerToday": "היום",
-  "contextMenuSemanticsLabel": "תפריט הקשר"
+  "contextMenuSemanticsLabel": "תפריט הקשר",
+  "calendarPreviousMonthSemanticsLabel": "החודש הקודם",
+  "calendarNextMonthSemanticsLabel": "החודש הבא",
+  "calendarNextYearSemanticsLabel": "השנה הבאה",
+  "calendarPreviousYearSemanticsLabel": "השנה הקודמת",
+  "calendarNextYearsSemanticsLabel": "השנים הבאות",
+  "calendarPreviousYearsSemanticsLabel": "השנים הקודמות"
 }

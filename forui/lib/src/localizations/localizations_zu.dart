@@ -72,6 +72,24 @@ class FLocalizationsZu extends FLocalizations {
   String get autocompleteNoResults => 'Akukho ukufana okutholiwe.';
 
   @override
+  String get calendarNextMonthSemanticsLabel => 'Inyanga elandelayo';
+
+  @override
+  String get calendarNextYearSemanticsLabel => 'Unyaka olandelayo';
+
+  @override
+  String get calendarNextYearsSemanticsLabel => 'Iminyaka elandelayo';
+
+  @override
+  String get calendarPreviousMonthSemanticsLabel => 'Inyanga edlule';
+
+  @override
+  String get calendarPreviousYearSemanticsLabel => 'Unyaka odlule';
+
+  @override
+  String get calendarPreviousYearsSemanticsLabel => 'Iminyaka edlule';
+
+  @override
   String get contextMenuSemanticsLabel => 'Imenyu yesimo';
 
   @override
