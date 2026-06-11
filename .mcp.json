@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "dart": {
+      "type": "stdio",
+      "command": "dart",
+      "args": [
+        "mcp-server"
+      ],
+      "env": {}
+    },
+    "marionette": {
+      "type": "stdio",
+      "command": "dart",
+      "args": [
+        "pub",
+        "global",
+        "run",
+        "marionette_mcp"
+      ],
+      "env": {}
+    }
+  }
+}

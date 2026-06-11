@@ -1,0 +1,7 @@
+{
+  "setup": [
+    "make bs"
+  ],
+  "teardown": [],
+  "run": []
+}
