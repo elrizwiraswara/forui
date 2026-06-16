@@ -15,6 +15,10 @@ and an API similar to other widgets.
 * **Breaking** Change `FCalendarController` to handle programmatic navigation. See `FDateSelectionController` for handling date selection.
 
 
+### `FCheckbox`
+* Add support for styling the label in the `focused` state.
+
+
 ### `FContextMenu` (New)
 * Add `FContextMenu`.
 
@@ -35,6 +39,11 @@ and an API similar to other widgets.
 * **Breaking** Remove `FDateField.calendar(initialType: ...)`.
 
 
+### `FFormField`
+* Add `FFormFieldVariant.focused`.
+* Add `FFormFieldErrorVariant.focused`.
+
+
 ### `FItem` & `FTile`
 * Fix nested `FTappable`-based widgets (e.g. `FButton` in a prefix or suffix) not receiving their own taps when the
   enclosing tile is inside an `FItemGroup` or `FTileGroup`.
@@ -50,8 +59,21 @@ and an API similar to other widgets.
 * **Breaking** Remove `FLineCalendarControl.lifted(selectable: ...)`. Use `FLineCalendar.selectable` instead.
 
 
+### `FLocalizations`
+* **Breaking** Remove `FLocalizations.fullDate`. Use `DateFormat.yMMMMd` instead.
+* **Breaking** Remove `FLocalizations.year`. Use `DateFormat.y` instead.
+* **Breaking** Remove `FLocalizations.yearMonth`. Use `DateFormat.yMMMM` instead.
+* **Breaking** Remove `FLocalizations.abbreviatedMonth`. Use `DateFormat.MMM` instead.
+* **Breaking** Remove `FLocalizations.day`. Use `DateFormat.d` instead.
+* **Breaking** Remove `FLocalizations.shortDate`. Use `DateFormat.yMd` instead.
+
+
 ### `FPointPortal` (New)
 * Add `FPointPortal`.
+
+
+### `FRadio`
+* Add support for styling the label in the `focused` state.
 
 
 ### `FResizable`
@@ -62,6 +84,21 @@ and an API similar to other widgets.
 * **Breaking** Rename `FResizableRegion(...)` to `FResizableRegion.fixed(...)`.
 * **Breaking** Rename `FResizableRegion.region(...)` to `FResizableRegion.fixed(...)`.
 * **Breaking** Rename `FResizableRegion(initialExtent: ...)` to `FResizableRegion.fixed(extent: ...)`.
+
+
+### `FSelect` & `FMultiSelect`
+* Add support for styling the label in the `focused` state.
+
+
+### `FSelectMenuTile`
+* Add support for styling the label in the `focused` state.
+
+
+### `FSwitch`
+* Add support for styling the label in the `focused` state.
+
+* Fix `FSwitch` throwing when a `focusNode` is provided.
+* Fix `FSwitch` registering two focus nodes, causing it to be a duplicate stop when tabbing through.
 
 
 ## 0.22.3
