@@ -40,6 +40,7 @@ Widget _harness(
       scrollPhysics: null,
       scrollCacheExtent: null,
       scrollBehavior: null,
+      fixedWeeks: true,
       onPress: onPress ?? (_) {},
       onLongPress: onLongPress ?? (_) {},
       builder: FCalendar.defaultDayBuilder,
@@ -280,6 +281,24 @@ void main() {
       unawaited(controller.animateTo(.utc(2024, 9, 10)));
       await tester.pumpAndSettle();
 
+      expect(controller.current, DateTime.utc(2024, 9));
+    });
+
+    testWidgets('superseding animation keeps the latest start/end', (tester) async {
+      final controller = _controller(initial: .utc(2024, 2, 15));
+      await tester.pumpWidget(_harness(controller));
+
+      unawaited(controller.animateTo(.utc(2024, 6, 10), duration: const Duration(milliseconds: 300)));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      // Supersede the first animation before it settles; its completion must not clear the new one's start/end.
+      unawaited(controller.animateTo(.utc(2024, 9, 10), duration: const Duration(milliseconds: 300)));
+      await tester.pump();
+
+      expect(controller.animation?.$2, controller.from(.utc(2024, 9)));
+
+      await tester.pumpAndSettle();
+      expect(controller.animation, null);
       expect(controller.current, DateTime.utc(2024, 9));
     });
   });
